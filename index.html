@@ -1,0 +1,296 @@
+import React, { useState } from 'react';
+import { 
+  Shield, 
+  MessageSquare, 
+  Smile, 
+  ArrowUpSquare, 
+  Eye, 
+  Wind, 
+  Skull, 
+  Gamepad2, 
+  Sparkles,
+  Box,
+  Trophy,
+  MousePointer2,
+  ChevronRight,
+  Server,
+  Terminal,
+  Code2,
+  Lock
+} from 'lucide-react';
+
+// --- DATA ---
+
+const skullParts = [
+  {
+    id: 'cranium',
+    name: 'The Cranium',
+    nickname: 'The Helmet Mod',
+    color: 'from-blue-500 to-cyan-400',
+    icon: <Shield className="w-8 h-8 text-white" />,
+    description: 'The ultimate armor! This big dome of bone acts like a heavy-duty helmet to protect your brain from taking damage. Every high-level avatar needs one.'
+  },
+  {
+    id: 'mandible',
+    name: 'Mandible',
+    nickname: 'The Chomper',
+    color: 'from-purple-500 to-indigo-400',
+    icon: <MessageSquare className="w-8 h-8 text-white" />,
+    description: 'The only moving part in your skull loadout! It lets you chat with friends, eat pizza, and express your avatar’s emotions.'
+  },
+  {
+    id: 'maxilla',
+    name: 'Maxilla',
+    nickname: 'Upper Jaw HQ',
+    color: 'from-emerald-500 to-teal-400',
+    icon: <ArrowUpSquare className="w-8 h-8 text-white" />,
+    description: 'This bone holds your top row of teeth and builds the center of your face. It’s the foundation of your facial mesh!'
+  },
+  {
+    id: 'zygomatic',
+    name: 'Zygomatic',
+    nickname: 'The Cheek Blocks',
+    color: 'from-amber-400 to-orange-400',
+    icon: <Smile className="w-8 h-8 text-white" />,
+    description: 'The cheekbones! They give your face its structure and make your cheeks pop out when you equip a "Happy" face emote.'
+  },
+  {
+    id: 'orbits',
+    name: 'The Orbits',
+    nickname: 'Eye Sockets',
+    color: 'from-rose-500 to-pink-400',
+    icon: <Eye className="w-8 h-8 text-white" />,
+    description: 'Deep, safe caves built into your skull where your eyeballs sit securely so you can see the whole game map without taking damage.'
+  }
+];
+
+const lingoCodes = [
+  { 
+    type: 'Prefix', 
+    code: 'Cephal-', 
+    meaning: 'Head', 
+    example: 'Cephalic Armor',
+    color: 'bg-blue-500/20 text-blue-300'
+  },
+  { 
+    type: 'Prefix', 
+    code: 'Crani-', 
+    meaning: 'Skull', 
+    example: 'Craniotomy',
+    color: 'bg-purple-500/20 text-purple-300'
+  },
+  { 
+    type: 'Prefix', 
+    code: 'Rhin-', 
+    meaning: 'Nose', 
+    example: 'Rhinoplasty',
+    color: 'bg-emerald-500/20 text-emerald-300'
+  },
+  { 
+    type: 'Suffix', 
+    code: '-logy', 
+    meaning: 'Study of', 
+    example: 'Zoology',
+    color: 'bg-amber-500/20 text-amber-300'
+  },
+  { 
+    type: 'Suffix', 
+    code: '-plasty', 
+    meaning: 'to repair', 
+    example: 'Rhinoplasty',
+    color: 'bg-rose-500/20 text-rose-300'
+  },
+  { 
+    type: 'Suffix', 
+    code: '-otomy', 
+    meaning: 'To Cut', 
+    example: 'Craniotomy',
+    color: 'bg-indigo-500/20 text-indigo-300'
+  }
+];
+
+const funFacts = [
+  { icon: <Box />, title: "Fusion Level", text: "Babies start with 44 skull pieces! As you level up to an adult, they fuse into 22 strong bones." },
+  { icon: <Shield />, title: "Tank Stats", text: "Your skull is incredibly strong. It can support over 18,000 lbs—that's more than two elephants!" },
+  { icon: <Skull />, title: "Ghost Nose", text: "Skulls have a hole for a nose because the actual nose is made of 'Cartilage' mesh, which disappears over time!" }
+];
+
+// --- UI COMPONENTS ---
+
+const LiquidGlass = ({ children, className = "" }) => (
+  <div className={`backdrop-blur-2xl saturate-150 bg-white/10 border border-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] rounded-[2.5rem] ${className}`}>
+    {children}
+  </div>
+);
+
+const NavDock = ({ activeTab, setActiveTab }) => (
+  <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+    <div className="backdrop-blur-3xl saturate-200 bg-black/40 px-3 py-3 rounded-[2rem] border border-white/10 shadow-2xl flex items-center gap-2">
+      {[
+        { id: 'explore', icon: <Server size={22} />, label: 'Skull Loadout' },
+        { id: 'lingo', icon: <Code2 size={22} />, label: 'Lingo Lab' },
+        { id: 'lore', icon: <Box size={22} />, label: 'Avatar Lore' }
+      ].map((tab) => (
+        <button
+          key={tab.id}
+          onClick={() => setActiveTab(tab.id)}
+          className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black transition-all duration-300 ${
+            activeTab === tab.id 
+              ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.3)] scale-105' 
+              : 'text-white/60 hover:text-white hover:bg-white/10'
+          }`}
+        >
+          {tab.icon}
+          <span className="hidden sm:inline tracking-tighter uppercase text-xs">{tab.label}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+const ExplorerTab = () => {
+  const [selected, setSelected] = useState(skullParts[0]);
+
+  return (
+    <div className="max-w-6xl mx-auto px-6 animate-fade-in grid lg:grid-cols-12 gap-6 items-start mb-32">
+      <div className="lg:col-span-5 space-y-4">
+        {skullParts.map((part) => (
+          <button
+            key={part.id}
+            onClick={() => setSelected(part)}
+            className={`w-full flex items-center justify-between p-4 rounded-[1.8rem] transition-all duration-300 group border ${
+              selected.id === part.id 
+                ? 'backdrop-blur-3xl bg-white/20 border-white/40 shadow-xl scale-[1.02]' 
+                : 'backdrop-blur-md bg-black/20 border-white/5 hover:bg-white/10'
+            }`}
+          >
+            <div className="flex items-center gap-4 text-left">
+              <div className={`p-3 rounded-2xl bg-gradient-to-br ${part.color} shadow-lg shadow-black/20`}>
+                {part.icon}
+              </div>
+              <div>
+                <h3 className={`font-black text-lg ${selected.id === part.id ? 'text-white' : 'text-white/70'}`}>{part.name}</h3>
+                <p className="text-[10px] text-white/50 font-black uppercase tracking-[0.2em]">{part.nickname}</p>
+              </div>
+            </div>
+            <ChevronRight className={`transition-transform duration-300 ${selected.id === part.id ? 'text-white translate-x-1' : 'text-white/20'}`} />
+          </button>
+        ))}
+      </div>
+
+      <div className="lg:col-span-7 lg:sticky lg:top-8">
+        <LiquidGlass className="p-10 overflow-hidden relative min-h-[500px] flex flex-col justify-center">
+          <div className={`absolute -top-32 -right-32 w-96 h-96 bg-gradient-to-br ${selected.color} opacity-30 blur-[100px] rounded-full mix-blend-screen transition-all duration-700`}></div>
+          
+          <div className={`inline-flex p-6 rounded-[2rem] bg-gradient-to-br ${selected.color} shadow-[0_20px_40px_rgba(0,0,0,0.4)] mb-10 transform transition-transform duration-500 hover:scale-110 border border-white/30`}>
+            {React.cloneElement(selected.icon, { className: "w-20 h-20 text-white" })}
+          </div>
+          
+          <h2 className="text-5xl font-black text-white mb-4 drop-shadow-md tracking-tight">{selected.name}</h2>
+          <div className="flex gap-2 mb-8">
+            <span className="px-4 py-1.5 rounded-lg bg-black/40 text-cyan-400 font-black text-[10px] border border-cyan-400/30 uppercase tracking-[0.2em]">Armor Class: S-Tier</span>
+            <span className="px-4 py-1.5 rounded-lg bg-black/40 text-white/70 font-black text-[10px] border border-white/10 uppercase tracking-[0.2em]">{selected.nickname}</span>
+          </div>
+          
+          <p className="text-2xl text-white/90 leading-snug font-medium mb-8">
+            {selected.description}
+          </p>
+
+          <div className="flex items-center gap-3 text-white/40 text-xs font-black uppercase tracking-[0.3em]">
+            <Terminal size={14} />
+            <span>Node Status: Secure</span>
+          </div>
+        </LiquidGlass>
+      </div>
+    </div>
+  );
+};
+
+const LingoTab = () => (
+  <div className="max-w-6xl mx-auto px-6 mb-32 animate-fade-in">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {lingoCodes.map((item, i) => (
+        <LiquidGlass key={i} className="p-8 group hover:scale-[1.03] transition-all duration-300 border-white/10 hover:border-white/30">
+          <div className="flex flex-col h-full">
+            <div className={`self-start px-3 py-1 rounded-md mb-6 font-black text-[10px] uppercase tracking-widest ${item.color}`}>
+              {item.type} Unlocked
+            </div>
+            <h3 className="text-4xl font-black text-white mb-2">{item.code}</h3>
+            <p className="text-white/50 font-bold uppercase text-xs tracking-widest mb-6">Means: <span className="text-white">{item.meaning}</span></p>
+            
+            <div className="mt-auto bg-black/20 p-4 rounded-2xl border border-white/5">
+              <p className="text-white/40 text-[10px] font-black uppercase mb-1">Server Usage:</p>
+              <p className="text-lg font-bold text-cyan-400 italic">"{item.example}"</p>
+            </div>
+          </div>
+        </LiquidGlass>
+      ))}
+    </div>
+  </div>
+);
+
+const LoreTab = () => (
+  <div className="max-w-5xl mx-auto px-6 mb-32 animate-fade-in space-y-6">
+    {funFacts.map((fact, i) => (
+      <LiquidGlass key={i} className="p-10 group hover:bg-white/15 transition-all">
+        <div className="flex items-center gap-10">
+          <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-[2rem] shadow-2xl border border-white/20">
+            {React.cloneElement(fact.icon, { size: 48, className: "text-white" })}
+          </div>
+          <div>
+            <h3 className="text-3xl font-black text-white mb-2 tracking-tight">{fact.title}</h3>
+            <p className="text-xl text-white/70 font-medium leading-relaxed">{fact.text}</p>
+          </div>
+        </div>
+      </LiquidGlass>
+    ))}
+  </div>
+);
+
+// --- MAIN APP ---
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('explore');
+
+  return (
+    <div className="min-h-screen bg-[#08090f] text-white overflow-hidden font-sans">
+      
+      {/* Liquid Mesh Background */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-blue-600/20 blur-[150px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-purple-600/20 blur-[150px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-[80px]" />
+      </div>
+
+      <style dangerouslySetInnerHTML={{__html: `
+        .animate-fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(40px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}} />
+
+      {/* Header */}
+      <div className="max-w-6xl mx-auto pt-20 pb-12 px-6 text-center">
+        <div className="inline-flex items-center gap-3 backdrop-blur-xl bg-white/5 px-6 py-2 rounded-2xl border border-white/10 mb-8">
+          <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]" />
+          <span className="text-[10px] font-black uppercase tracking-[0.4em]">Project Cranium v2.0</span>
+        </div>
+        <h1 className="text-7xl md:text-8xl font-black tracking-tighter mb-6 bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
+          SKULL <span className="text-white">BLOX</span>
+        </h1>
+        <p className="text-xl text-white/50 font-bold uppercase tracking-widest max-w-xl mx-auto">
+          Analyzing Avatar Hardware... 100% Complete
+        </p>
+      </div>
+
+      <main className="relative z-10">
+        {activeTab === 'explore' && <ExplorerTab />}
+        {activeTab === 'lingo' && <LingoTab />}
+        {activeTab === 'lore' && <LoreTab />}
+      </main>
+
+      <NavDock activeTab={activeTab} setActiveTab={setActiveTab} />
+    </div>
+  );
+}
